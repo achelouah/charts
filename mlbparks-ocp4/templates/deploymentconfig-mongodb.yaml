@@ -1,0 +1,73 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:  
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ template "mlbparks.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:      
+  replicas: 1
+  selector:
+    deploymentConfig: {{ .Release.Name }}-mongodb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        deploymentConfig: {{ .Release.Name }}-mongodb
+      name: {{ .Release.Name }}-mongodb
+    spec:  
+      containers:
+      - image: {{ .Values.mongodb.image }}
+        env:
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbUser
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbPassword
+        - name: MONGODB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbDatabase
+        - name: MONGODB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbAdminPassword
+        - name: MONGODB_QUIET
+          value: {{ .Values.mongodb.quiet | quote }}
+        imagePullPolicy: {{ .Values.mongodb.imagePullPolicy }}
+        name: {{ .Release.Name }}-mongodb
+        ports:
+        - containerPort: {{ .Values.mongodb.port }}
+          protocol: TCP
+        securityContext:
+          capabilities: {}
+          privileged: false
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mongodb/data
+          name: {{ .Release.Name }}-mongodb-data
+      restartPolicy: Always
+      volumes:
+      - emptyDir: {}
+        name: {{ .Release.Name }}-mongodb-data
+  triggers:
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - {{ .Release.Name }}-mongodb
+      from:
+        kind: ImageStreamTag
+        name: {{ .Values.mongodb.image }}
+        namespace: openshift
+    type: ImageChange
+  - type: ConfigChange

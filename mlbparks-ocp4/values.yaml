@@ -1,0 +1,20 @@
+# Default values for mlbparks.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+mlbparks:
+  gitUri: "https://github.com/achelouah/openshift3mlbparks.git"
+  gitRef: "master"
+  mavenMirrorUrl: ""
+  builderImage: "jboss-eap71-openshift:latest"
+  imagePullPolicy: Always
+  replicaCount: 1
+  port: 8080
+  pingPort: 8888
+  route: ""
+
+mongodb:
+  image: "mongodb:3.6"
+  imagePullPolicy: IfNotPresent
+  port: 27017
+  quiet: true

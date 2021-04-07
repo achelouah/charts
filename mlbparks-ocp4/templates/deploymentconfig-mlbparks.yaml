@@ -1,0 +1,82 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ template "mlbparks.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.mlbparks.replicaCount }}
+  selector:
+    deploymentConfig: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        deploymentConfig: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: {{ .Release.Name }}:latest
+        env:
+        - name: OPENSHIFT_DNS_PING_SERVICE_NAME
+          value: {{ .Release.Name }}-ping
+        - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+          value: {{ .Values.mlbparks.pingPort | quote }}
+        - name: MONGODB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbUser
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbPassword
+        - name: MONGODB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbDatabase
+        - name: MONGODB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}
+              key: mongodbAdminPassword
+        imagePullPolicy: {{ .Values.mlbparks.imagePullPolicy }}
+        name: {{ .Release.Name }}
+        ports:
+        - containerPort: {{ .Values.mlbparks.port }}
+          name: {{ .Release.Name }}-http
+          protocol: TCP
+        - containerPort: {{ .Values.mlbparks.pingPort }}
+          name: {{ .Release.Name }}-ping
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.mlbparks.port }}
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.mlbparks.port }}
+          initialDelaySeconds: 3
+          timeoutSeconds: 3
+        securityContext:
+          capabilities: {}
+          privileged: false
+        resources: {}
+  triggers:
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - {{ .Release.Name }}
+      from:
+        kind: ImageStreamTag
+        name: {{ .Release.Name }}:latest
+    type: ImageChange
+  - type: ConfigChange

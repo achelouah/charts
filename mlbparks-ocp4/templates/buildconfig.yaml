@@ -1,0 +1,38 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ template "mlbparks.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ .Release.Name }}:latest
+  source:
+    git:
+      ref: {{ .Values.mlbparks.gitRef }}
+      uri: {{ .Values.mlbparks.gitUri }}
+    type: Git
+  strategy:
+    sourceStrategy:
+      env:
+      - name: MAVEN_MIRROR_URL
+        value: {{ .Values.mlbparks.mavenMirrorUrl }}
+      from:
+        kind: ImageStreamTag
+        name: {{ .Values.mlbparks.builderImage }}
+        namespace: openshift
+    type: Source
+  triggers:
+  - generic:
+      secret: {{ randAlphaNum 16 }}
+    type: Generic
+  - github:
+      secret: {{ randAlphaNum 16 }}
+    type: GitHub
+  - imageChange: {}
+    type: ImageChange

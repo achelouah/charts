@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    description: Route for application's http service
+  labels:
+    app: {{ template "mlbparks.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  host: {{ .Values.mlbparks.route }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}
