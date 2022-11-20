@@ -1,14 +1,25 @@
 apiVersion: v1
 entries:
+  helloworld:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-11-20T13:12:06.356401447+01:00"
+    description: A Helm chart for Kubernetes
+    digest: c3cac92d116ea7f475cd41e35e03b18d676c2b5bd4132c5449f19721b1ad279d
+    name: helloworld
+    type: application
+    urls:
+    - https://achelouah.github.io/charts/helloworld-0.1.0.tgz
+    version: 0.1.0
   mlbparks:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-04-07T17:48:47.455487849+02:00"
+    created: "2022-11-20T13:12:06.357069979+01:00"
     description: A Helm chart for OpenShift v4
     digest: 0051933ee805e8f699ff7df7eb81d54c56409dbf7ac1b4da6f48c535f64e795d
     name: mlbparks
     type: application
     urls:
-    - mlbparks-0.1.0.tgz
+    - https://achelouah.github.io/charts/mlbparks-0.1.0.tgz
     version: 0.1.0
-generated: "2021-04-07T17:48:47.455041405+02:00"
+generated: "2022-11-20T13:12:06.355655056+01:00"
