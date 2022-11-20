@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ include "helloworld.metadataName" . }}
+  labels:
+    {{- include "helloworld.labels" . | nindent 4 }}
+  annotations:
+    link.argocd.argoproj.io/external-link: http://{{ .Values.routeHostname }}
+    {{- include "helloworld.annotations" . | nindent 4 }}
+spec:
+  host: {{ .Values.routeHostname }}
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: {{ include "helloworld.metadataName" . }}
+    weight: 100
+  wildcardPolicy: None
