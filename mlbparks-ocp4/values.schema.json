@@ -1,0 +1,101 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "properties": {
+      "mlbparks": {
+        "type": "object",
+        "title": "MLBParks Frontend",
+        "description": "Specifiy mlbparks frontend settings",
+        "required": [
+          "gitUri",
+          "route"
+        ],
+        "gitUri": {
+          "default": "https://github.com/achelouah/openshift3mlbparks.git",
+          "description": "Git source URI for application",
+          "title": "Git URI",
+          "type": "string"
+        },
+        "gitRef": {
+          "default": "master",
+          "description": "Git branch/tag reference",
+          "title": "Git branch/tag",
+          "type": "string"
+        },
+        "mavenMirrorUrl": {
+          "description": "Maven mirror url. If nexus is deployed locally, use nexus url",
+          "title": "Maven mirror url",
+          "type": "string"
+        },
+        "builderImage": {
+          "default": "jboss-eap71-openshift:latest",
+          "description": "S2I Builder Image for MLBParks frontend",
+          "title": "S2I Builder Image",
+          "type": "string"
+        },
+        "imagePullPolicy": {
+          "default": "Always",
+          "description": "Image pull policy",
+          "title": "Image pull policy",
+          "type": "string",
+          "enum": ["Always", "Never", "IfNotPresent"]
+        },
+        "replicaCount": {
+          "default": 1,
+          "description": "Define number of MLBParks MLBParks Frontend pods running",
+          "title": "Replica Count",
+          "type": "integer"
+        },
+        "port": {
+          "type": "integer",
+          "title": "Port",
+          "description": "Define Port",
+          "default": 8888
+          },
+        "pingPort": {
+          "type": "integer",
+          "title": "Ping Port",
+          "description": "Define Ping Port",
+          "default": 8080
+          },
+        "route": {
+          "description": "Define Route URI",
+          "title": "URI",
+          "type": "string",
+          "examples": [ "http://mlbparks-projectX.apps.example.com" ]
+        }
+      },
+      "mongodb": {
+        "type": "object",
+        "title": "MongoDB MLBParks Backend",
+        "description": "Specify MongoDB backend settings",
+        "required": [
+          "image"
+        ],
+        "image": {
+          "description": "S2I Builder Image for MongoDB",
+          "title": "S2I Builder Image",
+          "type": "string",
+          "default": "mongodb:3.6"
+        },
+        "imagePullPolicy": {
+          "description": "Image pull policy",
+          "title": "Image pull policy",
+          "type": "string",
+          "enum": ["Always", "Never", "IfNotPresent"],
+          "default": "IfNotPresent"
+        },
+        "port": {
+          "type": "integer",
+          "title": "Port",
+          "description": "Define Port",
+          "default": 27017
+        },
+        "quiet": {
+          "type": "bolean",
+          "title": "Quiet Mode for MongoDB",
+          "description": "Runs MongoDB in a quiet mode that attempts to limit the amount of output",
+          "default": true
+        }
+      }
+    }
+}
